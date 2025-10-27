@@ -61,6 +61,7 @@ const StockNews = ({ apiKey }) => {
     };
 
     fetchStockNews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey]);
 
   if (loading) {
