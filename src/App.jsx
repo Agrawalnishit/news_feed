@@ -12,7 +12,7 @@ import { useDebounce } from './hooks/useUtilityHooks';
 import { rateLimiter } from './utils/errorUtils';
 
 const API_KEY = process.env.REACT_APP_NEWS_API_KEY || '95f304b755ff4246946d1f68453b55c9';
-const BASE_URL = 'https://newsapi.org/v2';
+const NETLIFY_FUNCTION_URL = '/.netlify/functions/fetchNews';
 
 function App() {
   const [articles, setArticles] = useState([]);
@@ -46,32 +46,35 @@ function App() {
     setError(null);
 
     try {
-      let url;
+      // Build query parameters for Netlify function
       const params = new URLSearchParams({
-        apiKey: API_KEY,
         pageSize: pageSize.toString(),
         page: page.toString(),
         language: 'en'
       });
-      
+
+      let functionUrl;
       if (searchQuery) {
         params.append('q', searchQuery);
-        url = `${BASE_URL}/everything?${params}`;
+        params.append('type', 'everything');
+        functionUrl = `${NETLIFY_FUNCTION_URL}?${params}`;
       } else {
         params.append('country', 'us');
         params.append('category', category);
-        url = `${BASE_URL}/top-headlines?${params}`;
+        params.append('type', 'top-headlines');
+        functionUrl = `${NETLIFY_FUNCTION_URL}?${params}`;
       }
 
-      console.log('Fetching from:', url); // Debug log
-      const response = await fetch(url);
+      console.log('Fetching from Netlify function:', functionUrl);
+      const response = await fetch(functionUrl);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('API Response:', data); // Debug log
+      console.log('API Response:', data);
 
       if (data.status === 'error') {
         throw new Error(data.message || 'Failed to fetch news');

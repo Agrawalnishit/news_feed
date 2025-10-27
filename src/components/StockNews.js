@@ -23,15 +23,15 @@ const StockNews = ({ apiKey }) => {
 
       try {
         const params = new URLSearchParams({
-          apiKey: apiKey,
           q: '(stock OR market OR trading OR investment OR stocks OR shares OR finance)',
           domains: Object.keys(stockSources).join(','),
           sortBy: 'publishedAt',
           pageSize: '9',
-          language: 'en'
+          language: 'en',
+          type: 'everything'
         });
 
-        const response = await fetch(`https://newsapi.org/v2/everything?${params}`);
+        const response = await fetch(`/.netlify/functions/fetchNews?${params}`);
         const data = await response.json();
 
         if (data.status === 'error') {
