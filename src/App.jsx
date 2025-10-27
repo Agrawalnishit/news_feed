@@ -11,7 +11,7 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { useDebounce } from './hooks/useUtilityHooks';
 import { rateLimiter } from './utils/errorUtils';
 
-const API_KEY = '95f304b755ff4246946d1f68453b55c9';
+const API_KEY = process.env.REACT_APP_NEWS_API_KEY || '95f304b755ff4246946d1f68453b55c9';
 const BASE_URL = 'https://newsapi.org/v2';
 
 function App() {
